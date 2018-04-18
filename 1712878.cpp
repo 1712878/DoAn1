@@ -4,7 +4,6 @@
 #include <string.h>
 #include <wchar.h>
 #include <stdlib.h>
-#include <memory.h>
 typedef struct{
 	wchar_t mssv[11];
 	wchar_t hoten[31];
@@ -37,24 +36,39 @@ void DocDuLieu(FILE* fp, SINHVIEN *&sv, int &n){
 	}
 	free(a);
 }
+int TaoChuoi(FILE*fp, wchar_t *&a){
+	a = NULL;
+	int i = 0;
+	while (!feof(fp)){
+		wchar_t ch = fgetwc(fp);
+		a = (wchar_t*)realloc(a, (i + 1)*sizeof(wchar_t));
+		a[i] = ch;
+		i++;
+	}
+	return i;
+}
 void wmain()
 {
 	_setmode(_fileno(stdout), _O_U16TEXT);
 	_setmode(_fileno(stdin), _O_U16TEXT);
 	SINHVIEN *sv = NULL;
+	wchar_t *a = NULL;
 	int n;
-	FILE* fp = _wfopen(L"DSSV.csv", L"r, ccs=UTF-8");
-	if (!fp) {
+	FILE* fpds = _wfopen(L"DSSV.csv", L"r, ccs=UTF-8");
+	FILE* fphtml = _wfopen(L"1212123.htm", L"r,ccs=UTF-8");
+	if (!fpds || !fphtml) {
 		wprintf(L"Không thể đọc file \n");
 		return;
 	}
 	else {
-		DocDuLieu(fp, sv, n);
+		DocDuLieu(fpds, sv, n);
 		wprintf(L"Danh sách chứa %d sinh viên\n", n);
 		for (int i = 0; i < n; i++){
-				wprintf(L"%ls\n", sv[i].sothich_2);
+			wprintf(L"%ls\n", sv[i].mssv);
 		}
+		int m = TaoChuoi(fphtml, a);
+		wprintf(L"%ls", a);
 	}
-	if (sv != NULL)
-		free(sv);
+	free(sv);
+	free(a);
 }
