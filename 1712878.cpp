@@ -4,6 +4,7 @@
 #include <string.h>
 #include <wchar.h>
 #include <stdlib.h>
+#include <memory.h>
 typedef struct{
 	wchar_t mssv[11];
 	wchar_t hoten[31];
@@ -13,17 +14,15 @@ typedef struct{
 	wchar_t ngaysinh[11];
 	wchar_t anhcanhan[21];
 	wchar_t mota[1001];
-	//wchar_t sothich_1[201];
-	//wchar_t sothich_2[201];
+	wchar_t sothich_1[201];
+	wchar_t sothich_2[201];
 } SINHVIEN;
 void DocDuLieu(FILE* fp, SINHVIEN *&sv, int &n){
 	n = 0;
+	wchar_t *a = (wchar_t*)malloc(sizeof(SINHVIEN));
 	while (!feof(fp)){
-		wchar_t *a = NULL;
-		a = (wchar_t*)malloc(sizeof(SINHVIEN));
 		sv = (SINHVIEN*)realloc(sv, (n + 1)*sizeof(SINHVIEN));
 		fgetws(a, sizeof(SINHVIEN), fp);
-		//a = wcsdup(a);
 		wcscpy(sv[n].mssv, wcstok(a, L","));
 		wcscpy(sv[n].hoten, wcstok(NULL, L","));
 		wcscpy(sv[n].khoa, wcstok(NULL, L","));
@@ -31,10 +30,12 @@ void DocDuLieu(FILE* fp, SINHVIEN *&sv, int &n){
 		wcscpy(sv[n].khoatuyen, wcstok(NULL, L","));
 		wcscpy(sv[n].ngaysinh, wcstok(NULL, L","));
 		wcscpy(sv[n].anhcanhan, wcstok(NULL, L","));
-		wcscpy(sv[n].mota, wcstok(NULL, L"\n"));
+		wcscpy(sv[n].mota, wcstok(NULL, L","));
+		wcscpy(sv[n].sothich_1, wcstok(NULL, L","));
+		wcscpy(sv[n].sothich_2, wcstok(NULL, L"\n"));
 		n++;
-		free(a);
 	}
+	free(a);
 }
 void wmain()
 {
@@ -51,7 +52,8 @@ void wmain()
 		DocDuLieu(fp, sv, n);
 		wprintf(L"Danh sách chứa %d sinh viên\n", n);
 		for (int i = 0; i < n; i++){
-			wprintf(L"%ls\n", sv[i].mssv);
+			if (sv[i].sothich_1 != 0)
+				wprintf(L"%ls\n", sv[i].sothich_2);
 		}
 	}
 	if (sv != NULL)
