@@ -1,5 +1,4 @@
-﻿#define _CRT_SECURE_NO_WARNINGS
-#include <fcntl.h>
+﻿#include <fcntl.h>
 #include <io.h>
 #include <stdio.h>
 #include <string.h>
@@ -17,13 +16,14 @@ typedef struct{
 	//wchar_t sothich_1[201];
 	//wchar_t sothich_2[201];
 } SINHVIEN;
-void DocDuLieu(FILE* fp, SINHVIEN *sv, int &n){
+void DocDuLieu(FILE* fp, SINHVIEN *&sv, int &n){
 	n = 0;
-	sv = (SINHVIEN*)malloc(sizeof(SINHVIEN));
 	while (!feof(fp)){
 		wchar_t *a = NULL;
 		a = (wchar_t*)malloc(sizeof(SINHVIEN));
+		sv = (SINHVIEN*)realloc(sv, (n + 1)*sizeof(SINHVIEN));
 		fgetws(a, sizeof(SINHVIEN), fp);
+		//a = wcsdup(a);
 		wcscpy(sv[n].mssv, wcstok(a, L","));
 		wcscpy(sv[n].hoten, wcstok(NULL, L","));
 		wcscpy(sv[n].khoa, wcstok(NULL, L","));
@@ -31,9 +31,8 @@ void DocDuLieu(FILE* fp, SINHVIEN *sv, int &n){
 		wcscpy(sv[n].khoatuyen, wcstok(NULL, L","));
 		wcscpy(sv[n].ngaysinh, wcstok(NULL, L","));
 		wcscpy(sv[n].anhcanhan, wcstok(NULL, L","));
-		wcscpy(sv[n].mota, wcstok(NULL, L","));
+		wcscpy(sv[n].mota, wcstok(NULL, L"\n"));
 		n++;
-		sv = (SINHVIEN*)realloc(sv, n*sizeof(SINHVIEN));
 		free(a);
 	}
 }
@@ -52,7 +51,7 @@ void wmain()
 		DocDuLieu(fp, sv, n);
 		wprintf(L"Danh sách chứa %d sinh viên\n", n);
 		for (int i = 0; i < n; i++){
-			wprintf(L"%ls", sv[i].mssv);
+			wprintf(L"%ls\n", sv[i].mssv);
 		}
 	}
 	if (sv != NULL)
