@@ -47,6 +47,85 @@ int TaoChuoi(FILE*fp, wchar_t *&a){
 	}
 	return i;
 }
+int FindSubString(wchar_t* Dest, wchar_t* Src, int startPos = 0){
+	int l1 = wcslen(Dest), l2 = wcslen(Src);
+	if (l2 > l1 - startPos)
+		return -1;
+	else{
+		int run = startPos;
+		while (l1 - run >= l2){
+			int count = 0;
+			for (int i = run; i < l2 + run; i++){
+				if (*(Dest + i) != *(Src + i - run))
+					break;
+				else
+					count++;
+			}
+			if (count == l2){
+				return run;
+				break;
+			}
+			run++;
+		}
+		return -1;
+	}
+}
+int CountMatches(wchar_t* Dest, wchar_t* Src){
+	int l1 = wcslen(Dest), l2 = wcslen(Src);
+	int value = 0;
+	if (l2 > l1)
+		return value;
+	else{
+		int run = 0;
+		while (l1 - run >= l2){
+			int count = 0;
+			for (int i = run; i < l2 + run; i++){
+				if (*(Dest + i) != *(Src + i - run))
+					break;
+				else
+					count++;
+			}
+			if (count == l2){
+				value++;
+			}
+			run++;
+		}
+		return value;
+	}
+}
+void DeleteSubString(wchar_t* Dest, int startPos, int numChars){
+	wcscpy(Dest + startPos, Dest + startPos + numChars);
+}
+void InsertSubString(wchar_t* str, wchar_t* substr, int startPos){
+	int length = wcslen(str);
+	int sublength = wcslen(substr);
+	wchar_t* temp;
+	if (startPos > length) startPos = length;
+	if (startPos < length){
+		temp = new wchar_t[length - startPos + 1];
+		wcscpy(temp, str + startPos);
+		wcscpy(str + startPos, substr);
+		wcscpy(str + startPos + sublength, temp);
+		delete[]temp;
+	}
+	else wcscpy(str + startPos, substr);
+}
+void ThayThe(wchar_t *canthay, wchar_t *thayboi, wchar_t *&chuoicha){
+	int n1 = wcslen(canthay), n2 = wcslen(thayboi);//các hàm được gọi trong hàm này được chép từ bài thực hành sang
+	int n = CountMatches(chuoicha, canthay);//đếm sô lần xuất hiện chuỗi con trong chuỗi cha
+	for (int i = 0; i < n; i++){
+		int vitri = FindSubString(chuoicha, canthay);//tìm vị trí xuất hiện chuỗi con trong chuỗi cha
+		DeleteSubString(chuoicha, vitri, n1);//xoa chuỗi cha n1 phần tử từ "vitri"
+		InsertSubString(chuoicha, thayboi, vitri);//chèn chuỗi "thayboi" vào chuỗi "chuoicha" bắt đầu từ "vitri"
+	}
+}
+void TaoFileHtml(SINHVIEN sv, wchar_t *a){
+	wchar_t filename[16];
+	wcscpy(filename, sv.mssv);
+	wcscat(filename, L".html");
+	FILE* fp = _wfopen(filename, L"wb");
+	fputws(a, fp);
+}
 void wmain()
 {
 	_setmode(_fileno(stdout), _O_U16TEXT);
@@ -66,8 +145,8 @@ void wmain()
 		for (int i = 0; i < n; i++){
 			wprintf(L"%ls\n", sv[i].mssv);
 		}
-		int m = TaoChuoi(fphtml, a);
-		wprintf(L"%ls", a);
+		TaoChuoi(fphtml, a);
+		TaoFileHtml(sv[0], a);
 	}
 	free(sv);
 	free(a);
