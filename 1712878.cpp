@@ -119,12 +119,34 @@ void ThayThe(wchar_t *canthay, wchar_t *thayboi, wchar_t *&chuoicha){
 		InsertSubString(chuoicha, thayboi, vitri);//chèn chuỗi "thayboi" vào chuỗi "chuoicha" bắt đầu từ "vitri"
 	}
 }
+void ThayTheChuoi(SINHVIEN sv, wchar_t *&a){
+	//wchar_t *hoten = L"Nguyễn Văn A";
+	//wchar_t *fullname = L"NGUYỄN VĂN A - 1212123";
+	//wchar_t *email = L"nva@gmail.com";
+	//wchar_t *anhcanhan = L"HinhCaNhan.jpg";
+	//wchar_t *sothich_1 = L"Âm nhạc: POP, Balad";
+	//wchar_t *sothich_2 = L"Ẩm thực: bún riêu, bún thịt nướng";
+	//wchar_t *mota = L"Tôi là một người rất thân thiện.";
+	//wchar_t *mssv = L"1212123";
+	int i = 0;
+	wchar_t *s[] = { L"Nguyễn Văn A", L"1212123", L"nva@gmail.com", L"HinhCaNhan.jpg", L"Âm nhạc: POP, Balad",
+		L"Ẩm thực: bún riêu, bún thịt nướng", L"Tôi là một người rất thân thiện." };
+	ThayThe(s[i++], sv.hoten, a);
+	ThayThe(s[i++], sv.mssv, a);
+	ThayThe(s[i++], sv.email, a);
+	ThayThe(s[i++], sv.anhcanhan, a);
+	ThayThe(s[i++], sv.sothich_1, a);
+	ThayThe(s[i++], sv.sothich_2, a);
+	ThayThe(s[i++], sv.mota, a);
+}
 void TaoFileHtml(SINHVIEN sv, wchar_t *a){
 	wchar_t filename[16];
 	wcscpy(filename, sv.mssv);
 	wcscat(filename, L".html");
-	FILE* fp = _wfopen(filename, L"wb");
-	fputws(a, fp);
+	FILE* fp = _wfopen(filename, L"w, ccs=UTF-8");
+	wchar_t *b = a;
+	ThayTheChuoi(sv, b);
+	fputws(b, fp);
 }
 void wmain()
 {
@@ -149,5 +171,5 @@ void wmain()
 		TaoFileHtml(sv[0], a);
 	}
 	free(sv);
-	free(a);
+	//free(a);
 }
