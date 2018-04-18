@@ -52,7 +52,6 @@ void wmain()
 		DocDuLieu(fp, sv, n);
 		wprintf(L"Danh sách chứa %d sinh viên\n", n);
 		for (int i = 0; i < n; i++){
-			if (sv[i].sothich_1 != 0)
 				wprintf(L"%ls\n", sv[i].sothich_2);
 		}
 	}
