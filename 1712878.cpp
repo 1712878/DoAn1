@@ -4,6 +4,7 @@
 #include <string.h>
 #include <wchar.h>
 #include <stdlib.h>
+
 typedef struct{
 	wchar_t mssv[11];
 	wchar_t hoten[31];
@@ -93,60 +94,49 @@ int CountMatches(wchar_t* Dest, wchar_t* Src){
 		return value;
 	}
 }
-void DeleteSubString(wchar_t* Dest, int startPos, int numChars){
+void XoaChuoi(wchar_t* Dest, int startPos, int numChars){
+	int length = wcslen(Dest);
 	wcscpy(Dest + startPos, Dest + startPos + numChars);
 }
-void InsertSubString(wchar_t* str, wchar_t* substr, int startPos){
-	int length = wcslen(str);
-	int sublength = wcslen(substr);
-	wchar_t* temp;
-	if (startPos > length) startPos = length;
-	if (startPos < length){
-		temp = new wchar_t[length - startPos + 1];
-		wcscpy(temp, str + startPos);
-		wcscpy(str + startPos, substr);
-		wcscpy(str + startPos + sublength, temp);
-		delete[]temp;
-	}
-	else wcscpy(str + startPos, substr);
+void ChenChuoi(wchar_t* chuoicha, wchar_t* chuoicon, int vitri){
+	int l = wcslen(chuoicha);
+	int l1 = wcslen(chuoicon);
+	wchar_t* temp = new wchar_t[l - vitri + 1];
+	wcscpy(temp, chuoicha + vitri);
+	wcscpy(chuoicha + vitri, chuoicon);
+	wcscpy(chuoicha + vitri + l1, temp);
 }
-void ThayThe(wchar_t *canthay, wchar_t *thayboi, wchar_t *&chuoicha){
-	int n1 = wcslen(canthay), n2 = wcslen(thayboi);//các hàm được gọi trong hàm này được chép từ bài thực hành sang
+void ThayThe(wchar_t *canthay, wchar_t *thayboi, wchar_t *chuoicha){
+	int l1 = wcslen(canthay);//các hàm được gọi trong hàm này được chép từ bài thực hành sang
 	int n = CountMatches(chuoicha, canthay);//đếm sô lần xuất hiện chuỗi con trong chuỗi cha
 	for (int i = 0; i < n; i++){
 		int vitri = FindSubString(chuoicha, canthay);//tìm vị trí xuất hiện chuỗi con trong chuỗi cha
-		DeleteSubString(chuoicha, vitri, n1);//xoa chuỗi cha n1 phần tử từ "vitri"
-		InsertSubString(chuoicha, thayboi, vitri);//chèn chuỗi "thayboi" vào chuỗi "chuoicha" bắt đầu từ "vitri"
+		XoaChuoi(chuoicha, vitri, l1);//xoa chuỗi cha n1 phần tử từ "vitri"
+		ChenChuoi(chuoicha, thayboi, vitri);//chèn chuỗi "thayboi" vào chuỗi "chuoicha" bắt đầu từ "vitri"	
 	}
 }
-void ThayTheChuoi(SINHVIEN sv, wchar_t *&a){
-	//wchar_t *hoten = L"Nguyễn Văn A";
-	//wchar_t *fullname = L"NGUYỄN VĂN A - 1212123";
-	//wchar_t *email = L"nva@gmail.com";
-	//wchar_t *anhcanhan = L"HinhCaNhan.jpg";
-	//wchar_t *sothich_1 = L"Âm nhạc: POP, Balad";
-	//wchar_t *sothich_2 = L"Ẩm thực: bún riêu, bún thịt nướng";
-	//wchar_t *mota = L"Tôi là một người rất thân thiện.";
-	//wchar_t *mssv = L"1212123";
-	int i = 0;
-	wchar_t *s[] = { L"Nguyễn Văn A", L"1212123", L"nva@gmail.com", L"HinhCaNhan.jpg", L"Âm nhạc: POP, Balad",
-		L"Ẩm thực: bún riêu, bún thịt nướng", L"Tôi là một người rất thân thiện." };
-	ThayThe(s[i++], sv.hoten, a);
-	ThayThe(s[i++], sv.mssv, a);
-	ThayThe(s[i++], sv.email, a);
-	ThayThe(s[i++], sv.anhcanhan, a);
-	ThayThe(s[i++], sv.sothich_1, a);
-	ThayThe(s[i++], sv.sothich_2, a);
-	ThayThe(s[i++], sv.mota, a);
+void ThayTheChuoi(SINHVIEN sv, wchar_t *a){
+	/*wchar_t *s[] = { L"Nguyễn Văn A", L"1212123", L"nva@gmail.com", L"HinhCaNhan.jpg", L"Âm nhạc: POP, Balad",
+	L"Ẩm thực: bún riêu, bún thịt nướng", L"Tôi là một người rất thân thiện." };*/
+	ThayThe(L"Nguyễn Văn A", sv.hoten, a);
+	ThayThe(L"NGUYỄN VĂN A", sv.hoten, a);
+	ThayThe(L"1212123", sv.mssv, a);
+	ThayThe(L"nva@gmail.com", sv.email, a);
+	ThayThe(L"HinhCaNhan.jpg", sv.anhcanhan, a);
+	ThayThe(L"Âm nhạc: POP, Balad", sv.sothich_1, a);
+	ThayThe(L"Ẩm thực: bún riêu, bún thịt nướng", sv.sothich_2, a);
+	ThayThe(L"Tôi là một người rất thân thiện.", sv.mota, a);
+	ThayThe(L"MSSV - Tên sinh viên thực hiện", L"1712878 - Nguyễn Thọ Tuấn", a);
 }
 void TaoFileHtml(SINHVIEN sv, wchar_t *a){
 	wchar_t filename[16];
 	wcscpy(filename, sv.mssv);
 	wcscat(filename, L".html");
 	FILE* fp = _wfopen(filename, L"w, ccs=UTF-8");
-	wchar_t *b = a;
+	wchar_t* b = wcsdup(a);
 	ThayTheChuoi(sv, b);
 	fputws(b, fp);
+	fclose(fp);
 }
 void wmain()
 {
@@ -164,12 +154,11 @@ void wmain()
 	else {
 		DocDuLieu(fpds, sv, n);
 		wprintf(L"Danh sách chứa %d sinh viên\n", n);
-		for (int i = 0; i < n; i++){
-			wprintf(L"%ls\n", sv[i].mssv);
-		}
 		TaoChuoi(fphtml, a);
-		TaoFileHtml(sv[0], a);
+		for (int i = 0; i < n; i++)
+			TaoFileHtml(sv[i], a);
 	}
 	free(sv);
-	//free(a);
+	free(a);
+	fcloseall();
 }
