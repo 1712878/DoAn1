@@ -4,7 +4,8 @@
 #include <string.h>
 #include <wchar.h>
 #include <stdlib.h>
-
+#include <memory.h>
+#pragma pack(1)
 typedef struct{
 	wchar_t mssv[11];
 	wchar_t hoten[31];
@@ -22,7 +23,9 @@ void DocDuLieu(FILE* fp, SINHVIEN *&sv, int &n){
 	wchar_t *a = (wchar_t*)malloc(sizeof(SINHVIEN));
 	while (!feof(fp)){
 		sv = (SINHVIEN*)realloc(sv, (n + 1)*sizeof(SINHVIEN));
+		memset(sv + n, 0, sizeof(SINHVIEN));
 		fgetws(a, sizeof(SINHVIEN), fp);
+
 		wcscpy(sv[n].mssv, wcstok(a, L","));
 		wcscpy(sv[n].hoten, wcstok(NULL, L","));
 		wcscpy(sv[n].khoa, wcstok(NULL, L","));
@@ -31,8 +34,14 @@ void DocDuLieu(FILE* fp, SINHVIEN *&sv, int &n){
 		wcscpy(sv[n].ngaysinh, wcstok(NULL, L","));
 		wcscpy(sv[n].anhcanhan, wcstok(NULL, L","));
 		wcscpy(sv[n].mota, wcstok(NULL, L","));
-		wcscpy(sv[n].sothich_1, wcstok(NULL, L","));
-		wcscpy(sv[n].sothich_2, wcstok(NULL, L"\n"));
+		wchar_t *t = wcstok(NULL, L",");
+		if (t != NULL){
+			wcscpy(sv[n].sothich_1, t);
+			t = wcstok(NULL, L",");
+			if (t != NULL){
+				wcscpy(sv[n].sothich_2, t);
+			}
+		}
 		n++;
 	}
 	free(a);
@@ -122,6 +131,9 @@ void ThayTheChuoi(SINHVIEN sv, wchar_t *a){
 	ThayThe(L"NGUYỄN VĂN A", sv.hoten, a);
 	ThayThe(L"1212123", sv.mssv, a);
 	ThayThe(L"nva@gmail.com", sv.email, a);
+	ThayThe(L"Công nghệ thông tin", sv.khoa, a);
+	ThayThe(L"CÔNG NGHỆ THÔNG TIN", wcsupr(sv.khoa), a);
+	ThayThe(L"20/01/1994", sv.ngaysinh, a);
 	ThayThe(L"HinhCaNhan.jpg", sv.anhcanhan, a);
 	ThayThe(L"Âm nhạc: POP, Balad", sv.sothich_1, a);
 	ThayThe(L"Ẩm thực: bún riêu, bún thịt nướng", sv.sothich_2, a);
