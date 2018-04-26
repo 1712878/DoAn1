@@ -46,7 +46,7 @@ void DocDuLieu(FILE* fp, SINHVIEN *&sv, int &n){
 	}
 	free(a);
 }
-int TaoChuoi(FILE*fp, wchar_t *&a){
+void TaoChuoi(FILE*fp, wchar_t *&a){
 	a = NULL;
 	int i = 0;
 	while (!feof(fp)){
@@ -55,73 +55,77 @@ int TaoChuoi(FILE*fp, wchar_t *&a){
 		a[i] = ch;
 		i++;
 	}
-	return i;
 }
-int FindSubString(wchar_t* Dest, wchar_t* Src, int startPos = 0){
-	int l1 = wcslen(Dest), l2 = wcslen(Src);
-	if (l2 > l1 - startPos)
+int TimViTriChuoiCon(wchar_t* ChuoiCha, wchar_t* ChuoiCon){
+	int l1 = wcslen(ChuoiCha), l2 = wcslen(ChuoiCon);
+	if (l2 > l1)
 		return -1;
 	else{
-		int run = startPos;
-		while (l1 - run >= l2){
+		int ViTri = 0;
+		while (l1 - ViTri >= l2){
 			int count = 0;
-			for (int i = run; i < l2 + run; i++){
-				if (*(Dest + i) != *(Src + i - run))
+			for (int i = ViTri; i < l2 + ViTri; i++){
+				if (ChuoiCha[i] != ChuoiCon[i - ViTri])
 					break;
 				else
 					count++;
 			}
-			if (count == l2){
-				return run;
-				break;
-			}
-			run++;
+			if (count == l2)
+				return ViTri;
+			ViTri++;
 		}
 		return -1;
 	}
 }
-int CountMatches(wchar_t* Dest, wchar_t* Src){
-	int l1 = wcslen(Dest), l2 = wcslen(Src);
+int DemSoLuongChuoiConTrongChuoiCha(wchar_t* ChuoiCha, wchar_t* ChuoiCon){
+	int l1 = wcslen(ChuoiCha), l2 = wcslen(ChuoiCon);
 	int value = 0;
 	if (l2 > l1)
 		return value;
 	else{
-		int run = 0;
-		while (l1 - run >= l2){
+		int ViTri = 0;
+		while (l1 - ViTri >= l2){
 			int count = 0;
-			for (int i = run; i < l2 + run; i++){
-				if (*(Dest + i) != *(Src + i - run))
+			for (int i = ViTri; i < l2 + ViTri; i++){
+				if (ChuoiCha[i] != ChuoiCon[i - ViTri])
 					break;
 				else
 					count++;
 			}
-			if (count == l2){
+			if (count == l2)
 				value++;
-			}
-			run++;
+			ViTri++;
 		}
 		return value;
 	}
 }
-void XoaChuoi(wchar_t* Dest, int startPos, int numChars){
-	int length = wcslen(Dest);
-	wcscpy(Dest + startPos, Dest + startPos + numChars);
+void XoaChuoi(wchar_t* ChuoiCha, int ViTri, int SoLuong){
+	int length = wcslen(ChuoiCha);
+	if (ViTri + SoLuong >= length)
+		SoLuong = length - ViTri;
+	wcscpy(ChuoiCha + ViTri, ChuoiCha + ViTri + SoLuong);
 }
-void ChenChuoi(wchar_t* chuoicha, wchar_t* chuoicon, int vitri){
-	int l = wcslen(chuoicha);
-	int l1 = wcslen(chuoicon);
-	wchar_t* temp = new wchar_t[l - vitri + 1];
-	wcscpy(temp, chuoicha + vitri);
-	wcscpy(chuoicha + vitri, chuoicon);
-	wcscpy(chuoicha + vitri + l1, temp);
+void ChenChuoi(wchar_t* ChuoiCha, wchar_t* ChuoiCon, int ViTri){
+	int l = wcslen(ChuoiCha);
+	int l1 = wcslen(ChuoiCon);
+	if (ViTri > l)
+		ViTri = l;
+	if (ViTri < l){
+		wchar_t* temp = new wchar_t[l - ViTri + 1];
+		wcscpy(temp, ChuoiCha + ViTri);
+		wcscpy(ChuoiCha + ViTri, ChuoiCon);
+		wcscpy(ChuoiCha + ViTri + l1, temp);
+	}
+	else
+		wcscpy(ChuoiCha + ViTri, ChuoiCon);
 }
-void ThayThe(wchar_t *canthay, wchar_t *thayboi, wchar_t *chuoicha){
-	int l1 = wcslen(canthay);//các hàm được gọi trong hàm này được chép từ bài thực hành sang
-	int n = CountMatches(chuoicha, canthay);//đếm sô lần xuất hiện chuỗi con trong chuỗi cha
+void ThayThe(wchar_t *CanThay, wchar_t *ThayBoi, wchar_t *ChuoiCha){
+	int l1 = wcslen(CanThay);//các hàm được gọi trong hàm này được chép từ bài thực hành sang
+	int n = DemSoLuongChuoiConTrongChuoiCha(ChuoiCha, CanThay);//đếm sô lần xuất hiện chuỗi con trong chuỗi cha
 	for (int i = 0; i < n; i++){
-		int vitri = FindSubString(chuoicha, canthay);//tìm vị trí xuất hiện chuỗi con trong chuỗi cha
-		XoaChuoi(chuoicha, vitri, l1);//xóa chuỗi cha n1 phần tử từ "vitri"
-		ChenChuoi(chuoicha, thayboi, vitri);//chèn chuỗi "thayboi" vào chuỗi "chuoicha" bắt đầu từ "vitri"	
+		int ViTri = TimViTriChuoiCon(ChuoiCha, CanThay);//tìm vị trí xuất hiện chuỗi con trong chuỗi cha
+		XoaChuoi(ChuoiCha, ViTri, l1);//xóa chuỗi cha n1 phần tử từ "ViTri"
+		ChenChuoi(ChuoiCha, ThayBoi, ViTri);//chèn chuỗi "ThayBoi" vào chuỗi "ChuoiCha" bắt đầu từ "ViTri"	
 	}
 }
 void ThayTheChuoi(SINHVIEN sv, wchar_t *a){
@@ -142,8 +146,8 @@ void TaoFileHtml(SINHVIEN sv, wchar_t *a){
 	wchar_t filename[30];
 	wcscpy(filename, L"Website\\\\");
 	wcscat(filename, sv.mssv);
-	wcscat(filename, L".html");
-	FILE* fp = _wfopen(filename, L"w, ccs=UTF-8");
+	wcscat(filename, L".htm");
+	FILE* fp = _wfopen(filename, L"wt, ccs=UTF-8");
 	wchar_t* b = wcsdup(a);
 	ThayTheChuoi(sv, b);
 	fputws(b, fp);
@@ -156,18 +160,19 @@ void wmain()
 	SINHVIEN *sv = NULL;
 	wchar_t *a = NULL;
 	int n;
-	FILE* fpds = _wfopen(L"DSSV.csv", L"rt, ccs=UTF-8");
-	FILE* fphtml = _wfopen(L"Website\\1212123.htm", L"rt,ccs=UTF-8");
-	if (!fpds || !fphtml) {
+	FILE* fpds = _wfopen(L"Website\\DSSV.csv", L"rt, ccs=UTF-8");
+	FILE* fphtm = _wfopen(L"Website\\1212123.htm", L"rt,ccs=UTF-8");
+	if (!fpds || !fphtm) {
 		wprintf(L"Không thể đọc file \n");
 		return;
 	}
 	else {
 		DocDuLieu(fpds, sv, n);
-		wprintf(L"Danh sách chứa %d sinh viên\n", n);
-		TaoChuoi(fphtml, a);
+		TaoChuoi(fphtm, a);
 		for (int i = 0; i < n; i++)
 			TaoFileHtml(sv[i], a);
+		wprintf(L"Tạo thành công %d file html vào thư mục ../Website\n", n);
+		//Hiển thị tiếng việt vào Defaults -> Font -> Consolas trên màn hình Console
 	}
 	free(sv);
 	free(a);
